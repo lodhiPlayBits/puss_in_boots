@@ -16,7 +16,16 @@ public class Student {
 //    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long rollNo;
 
+    @Column(nullable = false)
+    private Boolean isDelete=false;
 
+    public Boolean getDelete() {
+        return isDelete;
+    }
+
+    public void setDelete(Boolean delete) {
+        isDelete = delete;
+    }
 
     @Column(nullable = false,unique = true)
     private String email;

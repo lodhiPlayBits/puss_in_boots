@@ -17,7 +17,7 @@ public class StudentService {
 
     public List<Student> getAllStudents(){
 
-        return studentRepository.findAll();
+        return studentRepository.findByisDeleteFalse();
 
     }
 
@@ -28,7 +28,12 @@ public class StudentService {
     }
 
     public Student getStudentDetailsbyId(Long Id){
-        return studentRepository.findById(Id).orElseThrow(()->new NoSuchElementException("Student not found"));
+        Student student=studentRepository.findById(Id)
+                .orElseThrow(()->new NoSuchElementException("Student not found"));
+        if(student.getDelete()){
+            throw new NoSuchElementException("Student Not Exist");
+        }
+        return student;
     }
 
     public Student getDetailsByRollNo(Long rollno){
@@ -40,6 +45,11 @@ public class StudentService {
         Student student = studentRepository.findById(id)
                 .orElseThrow(() ->
                         new NoSuchElementException("Student not found"));
+
+        if(student.getDelete()){
+            throw new NoSuchElementException("Student Not Exist");
+        }
+
 
         student.setName(updatedStudent.getName());
         student.setAge(updatedStudent.getAge());
@@ -54,8 +64,21 @@ public class StudentService {
                 .orElseThrow(() ->
                         new NoSuchElementException("Student not found"));
 
+        if(student.getDelete()){
+            throw new NoSuchElementException("Student Not Exist");
+        }
+
         studentRepository.deleteById(id);
         return student;
+    }
+
+    public void markDeleteStudent(Long id){
+        Student student=studentRepository.findById(id)
+                .orElseThrow(()->new NoSuchElementException(("Student Not found")));
+        student.setDelete(true);
+        studentRepository.save(student);
+        return ;
+
     }
 
 }

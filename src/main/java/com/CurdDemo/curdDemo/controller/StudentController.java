@@ -28,6 +28,7 @@ public class StudentController {
     @GetMapping
     public ResponseEntity<List<Student>> getAllStudents(){
         List<Student>students=studentService.getAllStudents();
+
         return ResponseEntity.ok(students);
     }
 
@@ -65,6 +66,11 @@ public class StudentController {
         return ResponseEntity.ok(s);
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> deleteStudetnDetailsbyIdSoft(@PathVariable Long id){
+        studentService.markDeleteStudent(id);
+        return ResponseEntity.noContent().build();
+    }
 
 
 

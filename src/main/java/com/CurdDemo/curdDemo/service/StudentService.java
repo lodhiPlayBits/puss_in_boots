@@ -1,5 +1,7 @@
 package com.CurdDemo.curdDemo.service;
 
+import com.CurdDemo.curdDemo.DTO.RequestStudentDTO;
+import com.CurdDemo.curdDemo.DTO.ResponseStudentDTO;
 import com.CurdDemo.curdDemo.entity.Student;
 import com.CurdDemo.curdDemo.repository.StudentRepository;
 import org.springframework.stereotype.Service;
@@ -15,32 +17,36 @@ public class StudentService {
         this.studentRepository=studentRepository;
     }
 
-    public List<Student> getAllStudents(){
+    public List<ResponseStudentDTO> getAllStudents(){
 
-        return studentRepository.findByisDeleteFalse();
-
+        List<Student>students=studentRepository.findByisDeleteFalse();
+        return students.stream()
+                .map(this::maptoDTO)
+                .toList();
     }
 
-    public Student createStudent(Student student){
-
-        System.out.println("Call from Student Service 💀💀 !!!!");
-        return studentRepository.save(student);
+    public ResponseStudentDTO createStudent(RequestStudentDTO requestStudentDTO){
+        Student student=mapToEntity(requestStudentDTO);
+        ResponseStudentDTO responseStudentDTO= maptoDTO(student);
+        responseStudentDTO.setMessage("Student Created Successfully!!!!! ♥️♥️♥️♥️");
+        return responseStudentDTO;
     }
 
-    public Student getStudentDetailsbyId(Long Id){
+    public ResponseStudentDTO getStudentDetailsbyId(Long Id){
         Student student=studentRepository.findById(Id)
                 .orElseThrow(()->new NoSuchElementException("Student not found"));
         if(student.getDelete()){
             throw new NoSuchElementException("Student Not Exist");
         }
-        return student;
+
+        return maptoDTO(student);
     }
 
     public Student getDetailsByRollNo(Long rollno){
         return studentRepository.findByRollNo(rollno).orElseThrow(()->new NoSuchElementException("No student fount with this roll number"));
     }
 
-    public Student updateStudent(Long id, Student updatedStudent) {
+    public ResponseStudentDTO updateStudent(Long id, Student updatedStudent) {
 
         Student student = studentRepository.findById(id)
                 .orElseThrow(() ->
@@ -55,8 +61,8 @@ public class StudentService {
         student.setAge(updatedStudent.getAge());
         student.setEmail(updatedStudent.getEmail());
         student.setRollNo(updatedStudent.getRollNo());
-
-        return studentRepository.save(student);
+        student=studentRepository.save(student);
+        return maptoDTO(student);
     }
 
     public  Student deleteStudentbyId(Long id){
@@ -80,5 +86,28 @@ public class StudentService {
         return ;
 
     }
+
+
+    private Student mapToEntity(RequestStudentDTO requestStudentDTO){
+        Student student=new Student();
+        student.setName(requestStudentDTO.getName());
+        student.setEmail(requestStudentDTO.getEmail());
+        student.setRollNo(requestStudentDTO.getRollNo());
+        student.setAge(requestStudentDTO.getAge());
+        studentRepository.save(student);
+        return student;
+    }
+
+    private ResponseStudentDTO maptoDTO(Student student){
+        ResponseStudentDTO responseStudentDTO=new ResponseStudentDTO();
+        responseStudentDTO.setName(student.getName());
+        responseStudentDTO.setEmail(student.getEmail());
+        responseStudentDTO.setAge(student.getAge());
+        responseStudentDTO.setRollNo(student.getRollNo());
+        responseStudentDTO.setId(student.getId());
+//        responseStudentDTO.setMessage("student created Successfully!!!!! ♥️♥️♥️");
+        return responseStudentDTO;
+    }
+
 
 }

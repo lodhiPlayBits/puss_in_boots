@@ -2,13 +2,16 @@ package com.CurdDemo.curdDemo.DTO;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import java.time.LocalDateTime;
+
 @JsonPropertyOrder({
         "id",
         "rollNo",
         "name",
         "email",
         "age",
-        "message"
+        "message",
+        "createdAt"
 })
 
 
@@ -20,6 +23,8 @@ public class ResponseStudentDTO {
     private String email;
     private String message;
     private Long id;
+    private LocalDateTime createdAt;
+
 
     public String getMessage() {
         return message;
@@ -39,6 +44,14 @@ public class ResponseStudentDTO {
 
     public Long getRollNo() {
         return rollNo;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public void setRollNo(Long rollNo) {

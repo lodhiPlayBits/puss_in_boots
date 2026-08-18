@@ -1,8 +1,12 @@
 package com.CurdDemo.curdDemo.entity;
 
+import java.time.LocalDateTime;
 
-import jakarta.persistence.*;
-import org.springframework.stereotype.Component;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 @Entity
 public class Student {
@@ -27,8 +31,18 @@ public class Student {
         isDelete = delete;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
     @Column(nullable = false,unique = true)
     private String email;
+
+    private LocalDateTime createdAt;
 
     public Long getId() {
         return id;

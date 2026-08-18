@@ -1,6 +1,8 @@
 package com.CurdDemo.curdDemo.controller;
 
 
+import com.CurdDemo.curdDemo.DTO.RequestStudentDTO;
+import com.CurdDemo.curdDemo.DTO.ResponseStudentDTO;
 import com.CurdDemo.curdDemo.entity.Student;
 import com.CurdDemo.curdDemo.repository.StudentRepository;
 import com.CurdDemo.curdDemo.service.StudentService;
@@ -26,15 +28,15 @@ public class StudentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Student>> getAllStudents(){
-        List<Student>students=studentService.getAllStudents();
+    public ResponseEntity<List<ResponseStudentDTO>> getAllStudents(){
+        List<ResponseStudentDTO>students=studentService.getAllStudents();
 
         return ResponseEntity.ok(students);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Student>getStudentDetailsbyId(@PathVariable Long id){
-        Student s=studentService.getStudentDetailsbyId(id);
+    public ResponseEntity<ResponseStudentDTO>getStudentDetailsbyId(@PathVariable Long id){
+        ResponseStudentDTO s=studentService.getStudentDetailsbyId(id);
         return ResponseEntity.ok(s);
     }
 
@@ -47,16 +49,15 @@ public class StudentController {
     }
 
     @PostMapping("/create-student")
-    public ResponseEntity<Student> createStudent(@RequestBody Student student){
-        System.out.println("Call from Student Controller 😎😎!!!!");
-        Student s=studentService.createStudent(student);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(s);
+    public ResponseEntity<ResponseStudentDTO> createStudent(@RequestBody RequestStudentDTO requestStudentDTO){
+       ResponseStudentDTO responseStudentDTO =studentService.createStudent(requestStudentDTO);
+       return ResponseEntity
+               .status(HttpStatus.CREATED)
+               .body(responseStudentDTO);
     }
     @PutMapping("/{id}")
-    public ResponseEntity<Student>updateStudent(@PathVariable Long id, @RequestBody Student body){
-        Student s=studentService.updateStudent(id,body);
+    public ResponseEntity<ResponseStudentDTO>updateStudent(@PathVariable Long id, @RequestBody Student body){
+        ResponseStudentDTO s=studentService.updateStudent(id,body);
         return ResponseEntity.ok(s);
     }
 

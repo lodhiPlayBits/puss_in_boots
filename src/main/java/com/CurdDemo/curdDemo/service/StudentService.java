@@ -1,14 +1,17 @@
 package com.CurdDemo.curdDemo.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
+
 import com.CurdDemo.curdDemo.DTO.RequestStudentDTO;
 import com.CurdDemo.curdDemo.DTO.ResponseStudentDTO;
 import com.CurdDemo.curdDemo.entity.Student;
+import com.CurdDemo.curdDemo.exceptions.DuplicateEmailException;
+import com.CurdDemo.curdDemo.exceptions.ResourceNotFoundException;
 import com.CurdDemo.curdDemo.repository.StudentRepository;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 public class StudentService {
@@ -26,52 +29,71 @@ public class StudentService {
     }
 
     public ResponseStudentDTO createStudent(RequestStudentDTO requestStudentDTO){
-        Student student=mapToEntity(requestStudentDTO);
-        ResponseStudentDTO responseStudentDTO= maptoDTO(student);
-        responseStudentDTO.setMessage("Student Created Successfully!!!!! ♥️♥️♥️♥️");
-        return responseStudentDTO;
+        try {
+            Student student = mapToEntity(requestStudentDTO);
+            ResponseStudentDTO responseStudentDTO = maptoDTO(student);
+            responseStudentDTO.setCreatedAt(LocalDateTime.now());
+            responseStudentDTO.setMessage("Student Created Successfully!!!!! ♥️♥️♥️♥️");
+            return responseStudentDTO;
+        } catch (DataIntegrityViolationException e) {
+            // Handle duplicate email or rollNo
+            if (e.getMessage().contains("email")) {
+                throw new DuplicateEmailException("A student with email '" + requestStudentDTO.getEmail() + "' already exists");
+            } else if (e.getMessage().contains("rollNo") || e.getMessage().contains("roll_no")) {
+                throw new DuplicateEmailException("A student with roll number '" + requestStudentDTO.getRollNo() + "' already exists");
+            }
+            throw e; // Re-throw if it's a different constraint violation
+        }
     }
 
     public ResponseStudentDTO getStudentDetailsbyId(Long Id){
-        Student student=studentRepository.findById(Id)
-                .orElseThrow(()->new NoSuchElementException("Student not found"));
+        Student student = studentRepository.findById(Id)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + Id));
+        
         if(student.getDelete()){
-            throw new NoSuchElementException("Student Not Exist");
+            throw new ResourceNotFoundException("Student with id " + Id + " has been deleted");
         }
 
         return maptoDTO(student);
     }
 
     public Student getDetailsByRollNo(Long rollno){
-        return studentRepository.findByRollNo(rollno).orElseThrow(()->new NoSuchElementException("No student fount with this roll number"));
+        return studentRepository.findByRollNo(rollno)
+                .orElseThrow(() -> new ResourceNotFoundException("No student found with roll number: " + rollno));
     }
 
     public ResponseStudentDTO updateStudent(Long id, Student updatedStudent) {
-
         Student student = studentRepository.findById(id)
-                .orElseThrow(() ->
-                        new NoSuchElementException("Student not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
 
         if(student.getDelete()){
-            throw new NoSuchElementException("Student Not Exist");
+            throw new ResourceNotFoundException("Student with id " + id + " has been deleted and cannot be updated");
         }
 
-
-        student.setName(updatedStudent.getName());
-        student.setAge(updatedStudent.getAge());
-        student.setEmail(updatedStudent.getEmail());
-        student.setRollNo(updatedStudent.getRollNo());
-        student=studentRepository.save(student);
-        return maptoDTO(student);
+        try {
+            student.setName(updatedStudent.getName());
+            student.setAge(updatedStudent.getAge());
+            student.setEmail(updatedStudent.getEmail());
+            student.setRollNo(updatedStudent.getRollNo());
+            student = studentRepository.save(student);
+            return maptoDTO(student);
+        } catch (DataIntegrityViolationException e) {
+            // Handle duplicate email or rollNo during update
+            if (e.getMessage().contains("email")) {
+                throw new DuplicateEmailException("Email '" + updatedStudent.getEmail() + "' is already in use by another student");
+            } else if (e.getMessage().contains("rollNo") || e.getMessage().contains("roll_no")) {
+                throw new DuplicateEmailException("Roll number '" + updatedStudent.getRollNo() + "' is already in use by another student");
+            }
+            throw e;
+        }
     }
 
-    public  Student deleteStudentbyId(Long id){
+    public Student deleteStudentbyId(Long id){
         Student student = studentRepository.findById(id)
-                .orElseThrow(() ->
-                        new NoSuchElementException("Student not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
 
         if(student.getDelete()){
-            throw new NoSuchElementException("Student Not Exist");
+            throw new ResourceNotFoundException("Student with id " + id + " has already been deleted");
         }
 
         studentRepository.deleteById(id);
@@ -79,12 +101,15 @@ public class StudentService {
     }
 
     public void markDeleteStudent(Long id){
-        Student student=studentRepository.findById(id)
-                .orElseThrow(()->new NoSuchElementException(("Student Not found")));
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Student not found with id: " + id));
+        
+        if(student.getDelete()){
+            throw new ResourceNotFoundException("Student with id " + id + " has already been marked as deleted");
+        }
+        
         student.setDelete(true);
         studentRepository.save(student);
-        return ;
-
     }
 
 

@@ -1,12 +1,13 @@
 package com.CurdDemo.curdDemo.service;
 
-import com.CurdDemo.curdDemo.DTO.RequestStudentDTO;
-import com.CurdDemo.curdDemo.DTO.ResponseStudentDTO;
-import com.CurdDemo.curdDemo.entity.Student;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import com.CurdDemo.curdDemo.DTO.RequestStudentDTO;
+import com.CurdDemo.curdDemo.DTO.ResponseStudentDTO;
+import com.CurdDemo.curdDemo.entity.Student;
 
 @Component
 
@@ -36,7 +37,10 @@ public class LoggingDecorator implements StudentService {
 
     @Override
     public ResponseStudentDTO getStudentDetailsbyId(Long Id) {
-        return null;
+        LoggingServiceUtil.logStart("StudentServiceImpl", "getStudentDetailsbyId");
+        ResponseStudentDTO result = studentService.getStudentDetailsbyId(Id);
+        LoggingServiceUtil.logEnd("StudentServiceImpl", "getStudentDetailsbyId");
+        return result;
     }
 
     @Override

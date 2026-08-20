@@ -1,13 +1,13 @@
 package com.CurdDemo.curdDemo.service;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+
 import com.CurdDemo.curdDemo.DTO.RequestStudentDTO;
 import com.CurdDemo.curdDemo.DTO.ResponseStudentDTO;
 import com.CurdDemo.curdDemo.entity.Student;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 
 @Component
@@ -35,7 +35,11 @@ public class ExecutionTimeService implements StudentService {
 
     @Override
     public ResponseStudentDTO getStudentDetailsbyId(Long Id) {
-        return null;
+        long start = System.currentTimeMillis();
+        ResponseStudentDTO result = loggingDecorator.getStudentDetailsbyId(Id);
+        long end = System.currentTimeMillis();
+        System.out.println("Execution time: " + (end - start) + " ms");
+        return result;
     }
 
     @Override

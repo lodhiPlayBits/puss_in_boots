@@ -14,6 +14,11 @@ public class LoggingAspect {
         System.out.println("This is Aspect call !!!!! 🤡🤡🤡🤡");
     }
 
+    @Before("@annotation(com.CurdDemo.curdDemo.annotation.TrackExecutionTime)")
+    public void DoBeforeMethod(){
+        System.out.println("This is Track call !!!!! 📉📉📉📉📉📉📉 ");
+    }
+
 
     @AfterReturning("execution(* com.CurdDemo.curdDemo.service.StudentServiceImpl.getStudentDetailsbyId(..))")
     public void logAfterMethod(){

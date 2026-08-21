@@ -3,6 +3,7 @@ package com.CurdDemo.curdDemo.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.CurdDemo.curdDemo.annotation.TrackExecutionTime;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -61,6 +62,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    @TrackExecutionTime
     public Student getDetailsByRollNo(Long rollno){
         return studentRepository.findByRollNo(rollno)
                 .orElseThrow(() -> new ResourceNotFoundException("No student found with roll number: " + rollno));

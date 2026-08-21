@@ -49,7 +49,11 @@ public class ExecutionTimeService implements StudentService {
 
     @Override
     public Student getDetailsByRollNo(Long rollno) {
-        return null;
+        long start = System.currentTimeMillis();
+        Student result = loggingDecorator.getDetailsByRollNo(rollno);
+        long end = System.currentTimeMillis();
+        System.out.println("Execution time: " + (end - start) + " ms");
+        return result;
     }
 
     @Override

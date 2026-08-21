@@ -50,9 +50,7 @@ public class StudentController {
     @GetMapping("/rollno/{rollno}")
     public ResponseEntity<Student>getDetailsByRollNo(@PathVariable Long rollno){
         Student s=studentService.getDetailsByRollNo(rollno);
-        return ResponseEntity
-                .status(HttpStatus.FOUND)
-                .body(s);
+        return ResponseEntity.ok(s);
     }
 
     @PostMapping("/create-student")

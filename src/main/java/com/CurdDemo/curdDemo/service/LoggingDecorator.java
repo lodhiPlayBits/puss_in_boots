@@ -45,7 +45,10 @@ public class LoggingDecorator implements StudentService {
 
     @Override
     public Student getDetailsByRollNo(Long rollno) {
-        return null;
+        LoggingServiceUtil.logStart("StudentServiceImpl", "getDetailsByRollNo");
+        Student result = studentService.getDetailsByRollNo(rollno);
+        LoggingServiceUtil.logEnd("StudentServiceImpl", "getDetailsByRollNo");
+        return result;
     }
 
     @Override
